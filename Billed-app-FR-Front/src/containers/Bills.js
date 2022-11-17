@@ -59,7 +59,3 @@ export default class {
     }
   }
 }
-
-function sayHello () {
-  console.log("Hello")
-}
