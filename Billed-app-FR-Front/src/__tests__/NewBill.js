@@ -61,7 +61,6 @@ describe("Given I am connected as an employee", () => {
         await waitFor(() => screen.getAllByTestId('file'))
         const fileInputs = screen.getAllByTestId('file')
         fileInputs.forEach((fileInput) => {
-          const previousFiles = fileInput.files
           fileInput.addEventListener('change', handleChangeFile)
           fireEvent.change(fileInput, { target: { files: "test.fr" } })
           expect(handleChangeFile).toHaveBeenCalled()
@@ -78,7 +77,7 @@ describe("Given I am connected as an employee", () => {
         const newBill = new NewBill({
           document, onNavigate, store, bills, localStorage: window.localStorage
         })
-        const previousBillsLength = mockStore.bills.length
+        const previousBillsLength = bills.length
         const handleChangeFile = jest.fn(newBill.handleChangeFile)
         await waitFor(() => screen.getAllByTestId('file'))
         const fileInputs = screen.getAllByTestId('file')
@@ -88,38 +87,28 @@ describe("Given I am connected as an employee", () => {
           expect(handleChangeFile).toHaveBeenCalled()
           expect(fileInput.files.length).toBeGreaterThan(0)
         })
-        expect(newBill.bills).toEqual(previousBillsLength + 1)
+        expect(mockStore.bills().list()).toEqual(previousBillsLength + 1)
       })
     })
-    // describe("When i am on NewBill page and click on Send Button", () => {
-    //   test("Then a the new bill should be updated", async () => {
-    //     Object.defineProperty(window, 'localStorage', { value: localStorageMock })
-    //     window.localStorage.setItem('user', JSON.stringify({
-    //       type: 'Employee'
-    //     }))
-    //     const root = document.createElement("div")
-    //     root.setAttribute("id", "root")
-    //     document.body.append(root)
-    //     router()
-    //     const onNavigate = (pathname) => {
-    //       document.body.innerHTML = ROUTES({ pathname })
-    //     }
-    //     const store = null
-    //     const newBill = new NewBill({
-    //       document, onNavigate, store, bills, localStorage: window.localStorage
-    //     })
-    //     const handleSubmit = jest.fn(newBill.handleSubmit)
-    //     await waitFor(() => screen.getAllByTestId('btn-create-newbill'))
-    //     const newBillButtons = screen.getAllByTestId('btn-create-newbill')
-    //     const dates = screen.getAllByTestId('datepicker')
-    //     console.log(dates)
-    //     newBillButtons.forEach((newBillButton) => {
-    //       newBillButton.addEventListener('click', handleSubmit)
-    //       userEvent.click(newBillButton)
-    //       expect(handleSubmit).toHaveBeenCalled()
-    //     })
-    //   })
-    // })
+    describe("When i am on NewBill page and click on Send Button", () => {
+      test("Then a the new bill should be updated", async () => {
+        const onNavigate = (pathname) => {
+          document.body.innerHTML = ROUTES({ pathname })
+        }
+        const store = null
+        const newBill = new NewBill({
+          document, onNavigate, store, bills, localStorage: window.localStorage
+        })
+        const handleSubmit = jest.fn(newBill.handleSubmit)
+        await waitFor(() => screen.getAllByTestId('form-new-bill'))
+        const formsNewBill = screen.getAllByTestId('form-new-bill')
+        formsNewBill.forEach((formNewBill) => {
+          formNewBill.addEventListener("submit", handleSubmit)
+          fireEvent.submit(formNewBill)
+          expect(handleSubmit).toHaveBeenCalled()
+        })
+      })
+    })
   })
 })
 // test d'intégration POST
@@ -135,22 +124,14 @@ describe("Given I am a user connected as Employee", () => {
       await waitFor(() => screen.getByTestId("exampleTable"))
       const table = await screen.getByTestId("exampleTable")
       const previousTableLength = table.rows.length
+
       window.onNavigate(ROUTES_PATH.NewBill)
-      const onNavigate = (pathname) => {
-        document.body.innerHTML = ROUTES({ pathname })
-      }
-      const store = null
-      const newBill = new NewBill({
-        document, onNavigate, store, bills, localStorage: window.localStorage
-      })
-      const handleChangeFile = jest.fn(newBill.handleChangeFile)
       await waitFor(() => screen.getAllByTestId('file'))
       const fileInputs = screen.getAllByTestId('file')
       fileInputs.forEach((fileInput) => {
-        fileInput.addEventListener('change', handleChangeFile)
-        fireEvent.change(fileInput, { target: { files: "test.jpg" } })
-        expect(handleChangeFile).toHaveBeenCalled()
+        fireEvent.change(fileInput, { target: { files: "test.png" } })
       })
+
       window.onNavigate(ROUTES_PATH.Bills)
       await waitFor(() => screen.getByTestId("exampleTable"))
       const newTable = await screen.getByTestId("exampleTable")
