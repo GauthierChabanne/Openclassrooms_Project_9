@@ -44,7 +44,7 @@ export default class NewBill {
         }).catch(error => console.error(error))
     } else {
       this.document.querySelector(`input[data-testid="file"]`).value = ""
-      alert("Désolé, " + fileName + " n'est pas un fichier valide, les seuls extensions acceptées sont " + validExtensions.join(", "))
+      // alert("Désolé, " + fileName + " n'est pas un fichier valide, les seuls extensions acceptées sont " + validExtensions.join(", "))
     }
   }
   handleSubmit = e => {
