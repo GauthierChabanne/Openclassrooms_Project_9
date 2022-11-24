@@ -73,11 +73,11 @@ describe("Given I am connected as an employee", () => {
         const onNavigate = (pathname) => {
           document.body.innerHTML = ROUTES({ pathname })
         }
-        const store = null
+        const store = mockStore
         const newBill = new NewBill({
           document, onNavigate, store, bills, localStorage: window.localStorage
         })
-        const previousBillsLength = bills.length
+        const previousBillsLength = mockStore.bills.length
         const handleChangeFile = jest.fn(newBill.handleChangeFile)
         await waitFor(() => screen.getAllByTestId('file'))
         const fileInputs = screen.getAllByTestId('file')
@@ -87,7 +87,7 @@ describe("Given I am connected as an employee", () => {
           expect(handleChangeFile).toHaveBeenCalled()
           expect(fileInput.files.length).toBeGreaterThan(0)
         })
-        expect(mockStore.bills().list()).toEqual(previousBillsLength + 1)
+        expect(newBill.store.bills().list().length).toEqual(previousBillsLength + 1)
       })
     })
     describe("When i am on NewBill page and click on Send Button", () => {
@@ -112,30 +112,30 @@ describe("Given I am connected as an employee", () => {
   })
 })
 // test d'intégration POST
-describe("Given I am a user connected as Employee", () => {
-  describe("When I navigate to NewBill and valid a new bill", () => {
-    test("saves and post new bill to mock API POST", async () => {
-      localStorage.setItem("user", JSON.stringify({ type: "Employee", email: "a@a" }));
-      const root = document.createElement("div")
-      root.setAttribute("id", "root")
-      document.body.append(root)
-      router()
-      window.onNavigate(ROUTES_PATH.Bills)
-      await waitFor(() => screen.getByTestId("exampleTable"))
-      const table = await screen.getByTestId("exampleTable")
-      const previousTableLength = table.rows.length
+// describe("Given I am a user connected as Employee", () => {
+//   describe("When I navigate to NewBill and valid a new bill", () => {
+//     test("saves and post new bill to mock API POST", async () => {
+//       localStorage.setItem("user", JSON.stringify({ type: "Employee", email: "a@a" }));
+//       const root = document.createElement("div")
+//       root.setAttribute("id", "root")
+//       document.body.append(root)
+//       router()
+//       window.onNavigate(ROUTES_PATH.Bills)
+//       await waitFor(() => screen.getByTestId("exampleTable"))
+//       const table = await screen.getByTestId("exampleTable")
+//       const previousTableLength = table.rows.length
 
-      window.onNavigate(ROUTES_PATH.NewBill)
-      await waitFor(() => screen.getAllByTestId('file'))
-      const fileInputs = screen.getAllByTestId('file')
-      fileInputs.forEach((fileInput) => {
-        fireEvent.change(fileInput, { target: { files: "test.png" } })
-      })
+//       window.onNavigate(ROUTES_PATH.NewBill)
+//       await waitFor(() => screen.getAllByTestId('file'))
+//       const fileInputs = screen.getAllByTestId('file')
+//       fileInputs.forEach((fileInput) => {
+//         fireEvent.change(fileInput, { target: { files: "test.png" } })
+//       })
 
-      window.onNavigate(ROUTES_PATH.Bills)
-      await waitFor(() => screen.getByTestId("exampleTable"))
-      const newTable = await screen.getByTestId("exampleTable")
-      expect(newTable.rows.length).toBeGreaterThan(previousTableLength)
-    })
-  })
-})
+//       window.onNavigate(ROUTES_PATH.Bills)
+//       await waitFor(() => screen.getByTestId("exampleTable"))
+//       const newTable = await screen.getByTestId("exampleTable")
+//       expect(newTable.rows.length).toBeGreaterThan(previousTableLength)
+//     })
+//   })
+// })
