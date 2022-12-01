@@ -22,12 +22,13 @@ export default class NewBill {
     const filePath = e.target.value.split(/\\/g)
     const fileName = filePath[filePath.length-1]
     const fileExtension = fileName.split(".").slice(-1)[0]
-    if (validExtensions.includes(fileExtension)) {
-      const formData = new FormData()
-      const email = JSON.parse(localStorage.getItem("user")).email
-      formData.append('file', file)
-      formData.append('email', email)
+    const formData = new FormData()
+    const email = JSON.parse(localStorage.getItem("user")).email
+    formData.append('file', file)
+    formData.append('email', email)
 
+
+    if (validExtensions.includes(fileExtension)) {
       this.store
         .bills()
         .create({

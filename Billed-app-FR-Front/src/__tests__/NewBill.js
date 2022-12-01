@@ -63,7 +63,6 @@ afterEach(() => {
 describe("Given I am connected as an employee", () => {
   describe("When I am on NewBill Page", () => {
     test("Then new bill icon in vertical layout should be highlighted", async () => {
-      await waitFor(() => screen.getByTestId('icon-mail'))
       const windowIcon = screen.getByTestId('icon-mail')
       //to-do write expect expression
       expect(windowIcon.classList.length).toBeGreaterThan(0)
@@ -81,7 +80,7 @@ describe("Given I am connected as an employee", () => {
       })
     })
     describe("When i am on NewBill page, click on choose file and enter a valid document", () => {
-      test("Then a new bill should be created", async () => {
+      test("Then a file should be added", async () => {
 
         const newBill = constructNewBill
         const handleChangeFile = jest.fn(newBill.handleChangeFile)
@@ -92,25 +91,7 @@ describe("Given I am connected as an employee", () => {
         expect(fileInput.files.length).toBeGreaterThan(0)
       })
     })
-    describe("When i am on NewBill page and click on Send Button", () => {
-      test("Then a the new bill should be updated, and i should go back on bills", async () => {
-        const newBill = constructNewBill
-        const handleSubmit = jest.fn(newBill.handleSubmit)
-        const formNewBill = screen.getByTestId('form-new-bill')
-        formNewBill.addEventListener("submit", handleSubmit)
-        fireEvent.submit(formNewBill)
-        expect(handleSubmit).toHaveBeenCalled()
-
-        const pathname = ROUTES_PATH['Bills']
-        const html = ROUTES({
-          pathname,
-          data,
-          loading,
-          error
-        })
-        document.body.innerHTML = html
-        expect(screen.getAllByText('Mes notes de frais')).toBeTruthy()
-      })
+    describe("When I do fill fields in correct format and I click on submit button", () => {
       test("Then a new bill should be created", async () => {
         const createBill = jest.fn(mockStore.bills().create);
         const updateBill = jest.fn(mockStore.bills().update);
@@ -143,7 +124,36 @@ describe("Given I am connected as an employee", () => {
           pct: 20,
         });
       });
-    })
+    });
+    describe("When nothing has been typed in PCT input", () => {
+      test("then the PCT should be 20 by default", () => {
+        const newBill = constructNewBill();
+
+        const inputData = bills[0];
+
+        const newBillForm = screen.getByTestId("form-new-bill");
+
+        const handleSubmit = jest.spyOn(newBill, "handleSubmit");
+        const updateBill = jest.spyOn(newBill, "updateBill");
+
+        newBill.fileName = inputData.fileName;
+
+        newBillForm.addEventListener("submit", handleSubmit);
+
+        fireEvent.submit(newBillForm);
+
+        expect(handleSubmit).toHaveBeenCalledTimes(1);
+
+        expect(updateBill).toHaveBeenCalledWith(
+          expect.objectContaining({
+            pct: 20,
+          })
+        );
+      });
+    });
+
+    //Test d'intégration POST
+
     describe("When an error occurs on API", () => {
       test("Then new bill is added to the API but fetch fails with '404 page not found' error", async () => {
         const newBill = constructNewBill();
@@ -187,29 +197,3 @@ describe("Given I am connected as an employee", () => {
     });
   });
 });
-// test d'intégration POST
-describe("Given I am a user connected as Employee", () => {
-  describe("When I navigate to NewBill and valid a new bill", () => {
-    test("saves and post new bill to mock API POST", async () => {
-      localStorage.setItem("user", JSON.stringify({ type: "Employee", email: "a@a" }));
-      const root = document.createElement("div")
-      root.setAttribute("id", "root")
-      document.body.append(root)
-      router()
-      window.onNavigate(ROUTES_PATH.Bills)
-      await waitFor(() => screen.getByTestId("exampleTable"))
-      const table = await screen.getByTestId("exampleTable")
-      const previousTableLength = table.rows.length
-
-      window.onNavigate(ROUTES_PATH.NewBill)
-      await waitFor(() => screen.getAllTestId('file'))
-      const fileInput = screen.getByTestId('file')
-      fireEvent.change(fileInput, { target: { files: "test.png" } })
-
-      window.onNavigate(ROUTES_PATH.Bills)
-      await waitFor(() => screen.getByTestId("exampleTable"))
-      const newTable = await screen.getByTestId("exampleTable")
-      expect(newTable.rows.length).toEqual(previousTableLength)
-    })
-  })
-})
