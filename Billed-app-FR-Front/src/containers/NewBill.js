@@ -66,6 +66,7 @@ export default class NewBill {
       status: 'pending'
     }
     this.updateBill(bill)
+    console.log(bill.date)
     this.onNavigate(ROUTES_PATH['Bills'])
   }
 

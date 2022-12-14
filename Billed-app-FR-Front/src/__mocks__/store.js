@@ -23,7 +23,7 @@ const mockedBills = {
         "fileName": "1592770761.jpeg",
         "commentary": "plop",
         "pct": 20,
-        "type": "Transports",
+        "type": "s",
         "email": "a@a",
         "fileUrl": "https://test.storage.tld/v0/b/billable-677b6.a…61.jpeg?alt=media&token=7685cd61-c112-42bc-9929-8a799bb82d8b",
         "date": "2001-01-01",
@@ -90,4 +90,3 @@ export default {
     //return {}
   },
 }
-

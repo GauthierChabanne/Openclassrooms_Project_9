@@ -16,10 +16,6 @@ import router from "../app/Router.js";
 
 jest.mock("../app/store", () => mockStore)
 
-const data = []
-const loading = false
-const error = null
-
 const constructNewBill = () => {
   return new NewBill({
     document,
